@@ -13,9 +13,10 @@ Visual Studio Code with Java Extension
 Command Line
 1. Navigate to folder containing file
 2. javac Primes.java
-3. java Primes.java (Optional int Flag)
+3. java Primes.java (Optional flag to change limit**) (Optional flag to change number of threads***)
 Note: program checks for any commandline arguements, so if a valid Integer is inputted then it will replace the limit (currently 10^9)
 Note**: Integer needs to have atleast 10 primes below it.
+Note***: Secondary flag that if inputted will change the number of threads spawned to the limit for Java.
 
 Algorithm Used: Sieve of Eratosthenes (https://www.geeksforgeeks.org/sieve-of-eratosthenes/)
 

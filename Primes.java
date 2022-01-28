@@ -3,11 +3,15 @@
 // Returns the execution time, the number of Primes, Sum of Primes
 // Top 10 primes from smallest to largest. 
 // (Optional) Add in an integer value when compiling to test for another value.
+// (Optional**) After adding and integer flag to change the limit you can change the num of thread spawnned as well.
 // Sieve of Eratos Algorithm from https://www.geeksforgeeks.org/sieve-of-eratosthenes/
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.lang.Math;
 
@@ -19,46 +23,39 @@ public class Primes implements Runnable {
     private static int endCount;
 
     public static void main(String [] args) throws IOException {
-        int limit = 100000000, numPrimes;
+        int limit = 100000000, numPrimes, numThread = 8;
         long startTime,endTime,executionTime,sumPrimes;
         Primes parrallel;
-        Thread thread0,thread1,thread2,thread3,thread4,thread5,thread6,thread7;
         // If an argument is passed in then make it the limit
         // Error will occur if it surpasess Integer limit
-        if(args.length > 0) {
+        if(args.length == 2) {
+            if (Integer.parseInt(args[0]) < 29){
+                System.out.println("Error: must enter an integer greater than 29");
+                return;
+            }
             limit = Integer.parseInt(args[0]);
+            numThread = Integer.parseInt(args[1]);
+            System.out.println("Running with N = "+limit+" and "+numThread+" Threads");
+        }
+        else if(args.length == 1) {
+            if (Integer.parseInt(args[0]) < 29){
+                System.out.println("Error: must enter an integer greater than 29");
+                return;
+            }
+            limit = Integer.parseInt(args[0]);
+            System.out.println("Running with N = "+limit);
         }
         // Start the timer before you spawn the threads
         startTime = System.nanoTime();
         parrallel = new Primes(limit);
-        thread0 = new Thread(parrallel);
-        thread1 = new Thread(parrallel);
-        thread2 = new Thread(parrallel);
-        thread3 = new Thread(parrallel);
-        thread4 = new Thread(parrallel);
-        thread5 = new Thread(parrallel);
-        thread6 = new Thread(parrallel);
-        thread7 = new Thread(parrallel);
-        // Begin thread execution (their run func)
-        thread0.start();
-        thread1.start();
-        thread2.start();
-        thread3.start();
-        thread4.start();
-        thread5.start();
-        thread6.start();
-        thread7.start();
-        // Join the threads together to main thread
+        ExecutorService threadPool = Executors.newFixedThreadPool(numThread);
+        for (int i = 2; i*i < limit; i++){
+            threadPool.execute(parrallel);
+        }
+        threadPool.shutdown();
         try {
-            thread0.join();
-            thread1.join();
-            thread2.join();
-            thread3.join();
-            thread4.join();
-            thread5.join();
-            thread6.join();
-            thread7.join();
-        } catch (InterruptedException e){
+            threadPool.awaitTermination(2147483647, TimeUnit.SECONDS);
+        }catch(InterruptedException e){
             e.printStackTrace();
         }
         // Stop the clock and convert it from ns > ms
@@ -67,7 +64,7 @@ public class Primes implements Runnable {
         numPrimes = getNumOfPrimes(sieve);
         sumPrimes = getSumOfPrimes(sieve);
         if (DEBUG){
-            printPrimes(sieve);
+            // printPrimes(sieve);
             System.out.print("Num Prime: "+numPrimes+" Runtime: "+executionTime);
         }
         // write to file primes.txt
