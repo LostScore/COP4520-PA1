@@ -66,8 +66,7 @@ public class Primes implements Runnable {
 
         // Stop the clock and convert it from ns > ms
         endTime = System.nanoTime();
-        executionTime = endTime - startTime;
-        executionTime = executionTime/1000000;
+        executionTime = (endTime - startTime)/1000000;
         numPrimes = getNumOfPrimes(sieve);
         sumPrimes = getSumOfPrimes(sieve);
 
